@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,31 +49,81 @@ export function Step1_DBConfig() {
     source: 'testing' | 'success' | 'failed' | null;
     target: 'testing' | 'success' | 'failed' | null;
   }>({ source: null, target: null });
+  const [validationErrors, setValidationErrors] = useState<{
+    source: string[];
+    target: string[];
+  }>({ source: [], target: [] });
+
+  const validateConfig = (config: typeof sourceConfig, type: 'source' | 'target') => {
+    const errors: string[] = [];
+    
+    if (config.type !== 'sqlite') {
+      if (!config.host.trim()) errors.push('Host is required');
+      if (!config.database.trim()) errors.push('Database name is required');
+      if (!config.username.trim()) errors.push('Username is required');
+      if (!config.password.trim()) errors.push('Password is required');
+      if (config.port < 1 || config.port > 65535) errors.push('Port must be between 1 and 65535');
+    }
+    
+    setValidationErrors(prev => ({ ...prev, [type]: errors }));
+    return errors.length === 0;
+  };
 
   const testConnection = async (type: 'source' | 'target') => {
+    const config = type === 'source' ? sourceConfig : targetConfig;
+    
+    if (!validateConfig(config, type)) {
+      toast({
+        title: 'Validation failed',
+        description: 'Please fix the configuration errors before testing.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setTestResults(prev => ({ ...prev, [type]: 'testing' }));
     
-    // Simulate connection test
+    // Simulate connection test with more realistic behavior
     setTimeout(() => {
-      const success = Math.random() > 0.3; // 70% success rate for demo
+      // Higher success rate for common configurations
+      const isCommonConfig = config.host === 'localhost' || config.host === '127.0.0.1';
+      const success = Math.random() > (isCommonConfig ? 0.2 : 0.4);
+      
       setTestResults(prev => ({ ...prev, [type]: success ? 'success' : 'failed' }));
       
       toast({
         title: success ? 'Connection successful' : 'Connection failed',
         description: success 
-          ? `Successfully connected to ${type} database` 
-          : `Failed to connect to ${type} database. Please check your credentials.`,
+          ? `Successfully connected to ${type} database (${config.type})` 
+          : `Failed to connect to ${type} database. Please verify your credentials and network connectivity.`,
         variant: success ? 'default' : 'destructive',
       });
     }, 2000);
   };
 
   const saveConfiguration = () => {
+    const sourceValid = validateConfig(sourceConfig, 'source');
+    const targetValid = validateConfig(targetConfig, 'target');
+    
+    if (!sourceValid || !targetValid) {
+      toast({
+        title: 'Configuration invalid',
+        description: 'Please fix all validation errors before saving.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const config: DatabaseConfig = {
       source: sourceConfig,
       target: targetConfig,
     };
+    
     dispatch({ type: 'SET_DATABASE_CONFIG', payload: config });
+    
+    // Mock save to Supabase connections table
+    console.log('Saving to Supabase connections table:', config);
+    
     toast({
       title: 'Configuration saved',
       description: 'Database configuration has been saved successfully.',
@@ -90,6 +139,18 @@ export function Step1_DBConfig() {
       mssql: 1433,
     };
     return ports[dbType] || 5432;
+  };
+
+  const renderValidationErrors = (errors: string[]) => {
+    if (errors.length === 0) return null;
+    
+    return (
+      <div className="text-sm text-destructive space-y-1">
+        {errors.map((error, index) => (
+          <p key={index}>• {error}</p>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -115,6 +176,7 @@ export function Step1_DBConfig() {
                     port: getDefaultPort(value),
                   });
                   setTestResults(prev => ({ ...prev, source: null }));
+                  setValidationErrors(prev => ({ ...prev, source: [] }));
                 }}
               >
                 <SelectTrigger>
@@ -196,6 +258,8 @@ export function Step1_DBConfig() {
               </>
             )}
 
+            {renderValidationErrors(validationErrors.source)}
+
             <Button
               onClick={() => testConnection('source')}
               disabled={testResults.source === 'testing'}
@@ -243,6 +307,7 @@ export function Step1_DBConfig() {
                     port: getDefaultPort(value),
                   });
                   setTestResults(prev => ({ ...prev, target: null }));
+                  setValidationErrors(prev => ({ ...prev, target: [] }));
                 }}
               >
                 <SelectTrigger>
@@ -324,6 +389,8 @@ export function Step1_DBConfig() {
               </>
             )}
 
+            {renderValidationErrors(validationErrors.target)}
+
             <Button
               onClick={() => testConnection('target')}
               disabled={testResults.target === 'testing'}
@@ -353,7 +420,11 @@ export function Step1_DBConfig() {
       </div>
 
       <div className="flex justify-center">
-        <Button onClick={saveConfiguration} className="bg-primary hover:bg-primary/90">
+        <Button 
+          onClick={saveConfiguration} 
+          className="bg-primary hover:bg-primary/90"
+          disabled={testResults.source !== 'success' || testResults.target !== 'success'}
+        >
           Save Configuration
         </Button>
       </div>
