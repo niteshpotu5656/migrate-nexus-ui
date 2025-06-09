@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Custom purple theme colors
+				surface: 'hsl(244, 19%, 17%)',
+				'surface-hover': 'hsl(244, 19%, 22%)',
+				'text-primary': 'hsl(0, 0%, 90%)',
+				'text-secondary': 'hsl(0, 0%, 70%)',
+				'neon-purple': 'hsl(265, 89%, 60%)',
+				'neon-purple-dark': 'hsl(265, 89%, 50%)',
+				'success': 'hsl(142, 76%, 36%)',
+				'warning': 'hsl(48, 96%, 53%)',
+				'error': 'hsl(0, 84%, 60%)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +95,34 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-glow': {
+					'0%, 100%': {
+						boxShadow: '0 0 5px hsl(265, 89%, 60%)'
+					},
+					'50%': {
+						boxShadow: '0 0 20px hsl(265, 89%, 60%), 0 0 30px hsl(265, 89%, 60%)'
+					}
+				},
+				'slide-in': {
+					'0%': {
+						transform: 'translateX(-100%)',
+						opacity: '0'
+					},
+					'100%': {
+						transform: 'translateX(0)',
+						opacity: '1'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+				'slide-in': 'slide-in 0.3s ease-out'
+			},
+			fontFamily: {
+				'inter': ['Inter', 'sans-serif'],
 			}
 		}
 	},
