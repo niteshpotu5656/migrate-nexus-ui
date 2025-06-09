@@ -19,7 +19,7 @@ import {
   Key,
   BarChart3,
   Download,
-  Sync,
+  RefreshCw,
   Terminal,
   CheckCircle,
 } from 'lucide-react';
@@ -32,7 +32,7 @@ const menuItems = [
   { title: 'Credential Vault', icon: Key, url: '/credential-vault' },
   { title: 'Analytics', icon: BarChart3, url: '/analytics' },
   { title: 'Export Panel', icon: Download, url: '/export-panel' },
-  { title: 'Delta Sync', icon: Sync, url: '/delta-sync' },
+  { title: 'Delta Sync', icon: RefreshCw, url: '/delta-sync' },
   { title: 'Developer Console', icon: Terminal, url: '/developer-console' },
   { title: 'Update Checker', icon: CheckCircle, url: '/update-checker' },
   { title: 'Settings', icon: Settings, url: '/settings' },

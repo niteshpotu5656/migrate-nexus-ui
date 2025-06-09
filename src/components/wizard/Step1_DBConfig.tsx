@@ -11,12 +11,14 @@ import { DatabaseConfig } from '@/context/WizardContext';
 import { Database, TestTube, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+type DatabaseType = 'postgresql' | 'mysql' | 'sqlite' | 'oracle' | 'mssql';
+
 const databaseTypes = [
-  { value: 'postgresql', label: 'PostgreSQL' },
-  { value: 'mysql', label: 'MySQL' },
-  { value: 'sqlite', label: 'SQLite' },
-  { value: 'oracle', label: 'Oracle' },
-  { value: 'mssql', label: 'Microsoft SQL Server' },
+  { value: 'postgresql' as const, label: 'PostgreSQL' },
+  { value: 'mysql' as const, label: 'MySQL' },
+  { value: 'sqlite' as const, label: 'SQLite' },
+  { value: 'oracle' as const, label: 'Oracle' },
+  { value: 'mssql' as const, label: 'Microsoft SQL Server' },
 ];
 
 export function Step1_DBConfig() {
@@ -24,7 +26,7 @@ export function Step1_DBConfig() {
   const { toast } = useToast();
   const [sourceConfig, setSourceConfig] = useState(
     state.databaseConfig?.source || {
-      type: 'postgresql',
+      type: 'postgresql' as DatabaseType,
       host: '',
       port: 5432,
       database: '',
@@ -35,7 +37,7 @@ export function Step1_DBConfig() {
   );
   const [targetConfig, setTargetConfig] = useState(
     state.databaseConfig?.target || {
-      type: 'mysql',
+      type: 'mysql' as DatabaseType,
       host: '',
       port: 3306,
       database: '',
@@ -79,8 +81,8 @@ export function Step1_DBConfig() {
     });
   };
 
-  const getDefaultPort = (dbType: string) => {
-    const ports: Record<string, number> = {
+  const getDefaultPort = (dbType: DatabaseType) => {
+    const ports: Record<DatabaseType, number> = {
       postgresql: 5432,
       mysql: 3306,
       sqlite: 0,
@@ -106,7 +108,7 @@ export function Step1_DBConfig() {
               <Label htmlFor="source-type">Database Type</Label>
               <Select
                 value={sourceConfig.type}
-                onValueChange={(value: any) => {
+                onValueChange={(value: DatabaseType) => {
                   setSourceConfig({
                     ...sourceConfig,
                     type: value,
@@ -234,7 +236,7 @@ export function Step1_DBConfig() {
               <Label htmlFor="target-type">Database Type</Label>
               <Select
                 value={targetConfig.type}
-                onValueChange={(value: any) => {
+                onValueChange={(value: DatabaseType) => {
                   setTargetConfig({
                     ...targetConfig,
                     type: value,

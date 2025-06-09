@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sync } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 
 export default function DeltaSync() {
   return (
@@ -16,7 +16,7 @@ export default function DeltaSync() {
       <Card className="migration-card">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Sync className="w-5 h-5 text-primary" />
+            <RefreshCw className="w-5 h-5 text-primary" />
             <span>Coming Soon</span>
           </CardTitle>
         </CardHeader>
